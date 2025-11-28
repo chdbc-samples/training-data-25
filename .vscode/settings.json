@@ -20,5 +20,6 @@
             "icon": "terminal-cmd",
             "args": ["/k", "chcp 65001"]
         },
-    }
+    },
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
