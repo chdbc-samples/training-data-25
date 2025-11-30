@@ -81,10 +81,7 @@ public class BasicDataOperationUsingMap {
             }
         });
 
-        // Додавання
-        Lynx newKey = new Lynx("Стрибун", 4.6);
-        String newValue = "Лада";
-        measureTime("Додавання до LinkedHashMap", () -> linkedMap.put(newKey, newValue));
+
 
         // Видалення за ключем
         measureTime("Видалення за ключем з LinkedHashMap", () -> linkedMap.remove(searchKey));
