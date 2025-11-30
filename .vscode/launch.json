@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "BasicDataOperationUsingMap",
+            "request": "launch",
+            "mainClass": "BasicDataOperationUsingMap",
+            "projectName": "PROGA2_a1a1494d"
+        },
+        {
+            "type": "java",
             "name": "BasicDataOperation",
             "request": "launch",
             "mainClass": "BasicDataOperation",
