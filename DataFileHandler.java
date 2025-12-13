@@ -3,52 +3,50 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class DataFileHandler {
 
     /**
-     * Завантажує масив об'єктів Float з файлу.
+     * Завантажує масив об'єктів Float з файлу, використовуючи Stream API.
      *
      * @param filePath Шлях до файлу з даними.
      * @return Масив об'єктів Float.
      */
     public static Float[] loadArrayFromFile(String filePath) {
-        Float[] temporaryArray = new Float[1000];
-        int currentIndex = 0;
-
         try (BufferedReader fileReader = new BufferedReader(new FileReader(filePath))) {
-            String currentLine;
-            while ((currentLine = fileReader.readLine()) != null) {
-                currentLine = currentLine.trim().replaceAll("^\\uFEFF", "");
-                if (!currentLine.isEmpty()) {
-                    float parsedValue = Float.parseFloat(currentLine);
-                    temporaryArray[currentIndex++] = parsedValue;
-                }
-            }
-        } catch (IOException | NumberFormatException e) {
-            e.printStackTrace();
+            return fileReader.lines() // Отримуємо потік рядків з файлу
+                    .map(currentLine -> currentLine.trim().replaceAll("^\\uFEFF", "")) // Очищаємо пробіли та BOM
+                    .filter(currentLine -> !currentLine.isEmpty()) // Видаляємо порожні рядки
+                    .map(currentLine -> Float.parseFloat(currentLine)) // Конвертуємо кожен рядок у Float
+                    .toArray(Float[]::new); // Збираємо результат у масив Float[]
+        } catch (IOException ioException) {
+            // Замінюємо перехоплення на RuntimeException, як у прикладі вказівки
+            throw new RuntimeException("Помилка читання даних з файлу: " + filePath, ioException);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Помилка конвертації даних у Float: " + filePath, e);
         }
-
-        Float[] resultArray = new Float[currentIndex];
-        System.arraycopy(temporaryArray, 0, resultArray, 0, currentIndex);
-
-        return resultArray;
     }
 
     /**
-     * Зберігає масив об'єктів Float у файл.
+     * Зберігає масив об'єктів Float у файл, використовуючи Stream API.
      *
      * @param floatArray Масив об'єктів Float.
-     * @param filePath   Шлях до файлу для збереження.
+     * @param filePath   Шлях до файлу для збереження.
      */
     public static void writeArrayToFile(Float[] floatArray, String filePath) {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath))) {
-            for (float element : floatArray) {
-                fileWriter.write(Float.toString(element));
-                fileWriter.newLine();
-            }
+            // Конвертуємо масив у потік
+            String content = Arrays.stream(floatArray)
+                    // Конвертуємо кожен елемент Float у String, використовуючи String::valueOf
+                    .map(String::valueOf)
+                    // Об'єднуємо всі рядки, розділяючи системним роздільником
+                    .collect(Collectors.joining(System.lineSeparator()));
+
+            fileWriter.write(content);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Помилка запису даних у файл: " + filePath, e);
         }
     }
 }

@@ -1,7 +1,8 @@
 import java.util.Queue;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.PriorityQueue;
+import java.util.Comparator;
+import java.util.stream.IntStream;
 
 public class BasicDataOperationUsingQueue {
     private float floatValueToSearch;
@@ -11,34 +12,52 @@ public class BasicDataOperationUsingQueue {
     BasicDataOperationUsingQueue(float floatValueToSearch, Float[] floatArray) {
         this.floatValueToSearch = floatValueToSearch;
         this.floatArray = floatArray;
+        // Створення PriorityQueue з елементів масиву
         this.floatQueue = new PriorityQueue<>(Arrays.asList(floatArray));
     }
 
     public void runDataProcessing() {
+        System.out.println("========= АНАЛІЗ QUEUE (PriorityQueue) =========");
         findInQueue();
         locateMinMaxInQueue();
-        performQueueOperations();
+        performQueueOperations(); // Ці операції (peek/poll) залишаються імперативними
 
+        System.out.println("========= ДО СОРТУВАННЯ МАСИВУ =========");
         findInArray();
         locateMinMaxInArray();
 
         performArraySorting();
 
+        System.out.println("========= ПІСЛЯ СОРТУВАННЯ МАСИВУ =========");
         findInArray();
         locateMinMaxInArray();
 
         DataFileHandler.writeArrayToFile(floatArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
     }
 
+    /**
+     * Упорядковує масив елементів float, використовуючи Stream API.
+     */
     private void performArraySorting() {
         long timeStart = System.nanoTime();
-        Arrays.sort(floatArray);
+        // 2.4.1 Сортування масиву
+        this.floatArray = Arrays.stream(this.floatArray)
+                                  .sorted()
+                                  .toArray(Float[]::new);
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву float");
     }
 
+    /**
+     * Здійснює пошук елемента в масиві float, використовуючи Stream API.
+     */
     private void findInArray() {
         long timeStart = System.nanoTime();
-        int position = Arrays.binarySearch(this.floatArray, floatValueToSearch);
+        // 2.4.2 Пошук конкретного значення в масиві
+        int position = IntStream.range(0, this.floatArray.length)
+                                .filter(i -> floatValueToSearch == this.floatArray[i])
+                                .findFirst()
+                                .orElse(-1);
+
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi float");
 
         if (position >= 0) {
@@ -48,6 +67,9 @@ public class BasicDataOperationUsingQueue {
         }
     }
 
+    /**
+     * Визначає найменше і найбільше значення в масиві, використовуючи Stream API.
+     */
     private void locateMinMaxInArray() {
         if (floatArray == null || floatArray.length == 0) {
             System.out.println("Масив є пустим або не ініціалізованим.");
@@ -56,23 +78,31 @@ public class BasicDataOperationUsingQueue {
 
         long timeStart = System.nanoTime();
 
-        float minValue = floatArray[0];
-        float maxValue = floatArray[0];
+        // 2.4.3 Пошук мінімального і максимального значення в масиві (заміна ручного циклу)
+        Float min = Arrays.stream(this.floatArray)
+                           .min(Float::compareTo)
+                           .orElse(null);
 
-        for (float currentValue : floatArray) {
-            if (currentValue < minValue) minValue = currentValue;
-            if (currentValue > maxValue) maxValue = currentValue;
-        }
+        Float max = Arrays.stream(this.floatArray)
+                           .max(Float::compareTo)
+                           .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
-        System.out.println("Найменше значення в масивi: " + minValue);
-        System.out.println("Найбільше значення в масивi: " + maxValue);
+        System.out.println("Найменше значення в масивi: " + min);
+        System.out.println("Найбільше значення в масивi: " + max);
     }
 
+    /**
+     * Пошук конкретного значення в черзі, використовуючи Stream API.
+     */
     private void findInQueue() {
         long timeStart = System.nanoTime();
-        boolean elementExists = this.floatQueue.contains(floatValueToSearch);
+        
+        // 2.5.3 Пошук конкретного значення в черзі (заміна .contains)
+        boolean elementExists = this.floatQueue.stream()
+            .anyMatch(f -> f.equals(floatValueToSearch)); // Використання anyMatch
+
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в PriorityQueue float");
 
         if (elementExists) {
@@ -82,6 +112,9 @@ public class BasicDataOperationUsingQueue {
         }
     }
 
+    /**
+     * Пошук мінімального і максимального значення в черзі, використовуючи Stream API.
+     */
     private void locateMinMaxInQueue() {
         if (floatQueue == null || floatQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
@@ -90,8 +123,14 @@ public class BasicDataOperationUsingQueue {
 
         long timeStart = System.nanoTime();
 
-        float minValue = Collections.min(floatQueue);
-        float maxValue = Collections.max(floatQueue);
+        // 2.5.3 Пошук мінімального та максимального значення в черзі
+        Float minValue = floatQueue.stream()
+                .min(Float::compareTo)
+                .orElse(null);
+        
+        Float maxValue = floatQueue.stream()
+                .max(Float::compareTo)
+                .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в PriorityQueue");
 
@@ -99,6 +138,10 @@ public class BasicDataOperationUsingQueue {
         System.out.println("Найбільше значення в PriorityQueue: " + maxValue);
     }
 
+    /**
+     * Операції peek/poll залишаються імперативними, оскільки вони змінюють стан черги
+     * і не мають прямого функціонального аналога, що повертає чергу.
+     */
     private void performQueueOperations() {
         if (floatQueue == null || floatQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
