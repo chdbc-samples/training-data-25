@@ -1,85 +1,75 @@
-import java.time.LocalDateTime;
 import java.util.Queue;
 import java.util.Arrays;
 import java.util.PriorityQueue;
+import java.util.Comparator;
+import java.util.stream.IntStream;
 
-/**
- * Клас BasicDataOperationUsingQueue реалізує роботу з колекціями типу Queue для LocalDateTime.
- * 
- * <p>Основні функції класу:</p>
- * <ul>
- *   <li>{@link #runDataProcessing()} - Запускає комплекс операцій з даними.</li>
- *   <li>{@link #performArraySorting()} - Упорядковує масив LocalDateTime.</li>
- *   <li>{@link #findInArray()} - Пошук значення в масиві LocalDateTime.</li>
- *   <li>{@link #locateMinMaxInArray()} - Знаходить мінімальне і максимальне значення в масиві.</li>
- *   <li>{@link #findInQueue()} - Пошук значення в черзі LocalDateTime.</li>
- *   <li>{@link #locateMinMaxInQueue()} - Знаходить граничні значення в черзі.</li>
- *   <li>{@link #performQueueOperations()} - Виконує операції peek і poll з чергою.</li>
- * </ul>
- * 
- */
 public class BasicDataOperationUsingQueue {
-    private LocalDateTime dateTimeValueToSearch;
-    private LocalDateTime[] dateTimeArray;
-    private Queue<LocalDateTime> dateTimeQueue;
+    private float floatValueToSearch;
+    private Float[] floatArray;
+    private Queue<Float> floatQueue;
 
-    /**
-     * Конструктор, який iнiцiалiзує об'єкт з готовими даними.
-     * 
-     * @param dateTimeValueToSearch Значення для пошуку
-     * @param dateTimeArray Масив LocalDateTime
-     */
-    BasicDataOperationUsingQueue(LocalDateTime dateTimeValueToSearch, LocalDateTime[] dateTimeArray) {
-        this.dateTimeValueToSearch = dateTimeValueToSearch;
-        this.dateTimeArray = dateTimeArray;
-        this.dateTimeQueue = new PriorityQueue<>(Arrays.asList(dateTimeArray));
+    BasicDataOperationUsingQueue(float floatValueToSearch, Float[] floatArray) {
+        this.floatValueToSearch = floatValueToSearch;
+        this.floatArray = floatArray;
+        // Створення PriorityQueue з елементів масиву
+        this.floatQueue = new PriorityQueue<>(Arrays.asList(floatArray));
     }
-    
-    /**
-     * Запускає комплексну обробку даних з використанням черги.
-     * 
-     * Метод завантажує дані, виконує операції з чергою та масивом LocalDateTime.
-     */
+
     public void runDataProcessing() {
-        // спочатку обробляємо чергу дати та часу
+        System.out.println("========= АНАЛІЗ QUEUE (PriorityQueue) =========");
         findInQueue();
         locateMinMaxInQueue();
-        performQueueOperations();
+        performQueueOperations(); // Ці операції (peek/poll) залишаються імперативними
 
-        // потім працюємо з масивом
+        System.out.println("========= ДО СОРТУВАННЯ МАСИВУ =========");
         findInArray();
         locateMinMaxInArray();
 
         performArraySorting();
 
+        System.out.println("========= ПІСЛЯ СОРТУВАННЯ МАСИВУ =========");
         findInArray();
         locateMinMaxInArray();
 
-        // зберігаємо відсортований масив до файлу
-        DataFileHandler.writeArrayToFile(dateTimeArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
+        DataFileHandler.writeArrayToFile(floatArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
     }
 
     /**
-     * Сортує масив об'єктiв LocalDateTime та виводить початковий i вiдсортований масиви.
-     * Вимiрює та виводить час, витрачений на сортування масиву в наносекундах.
+     * Упорядковує масив елементів float, використовуючи Stream API.
      */
     private void performArraySorting() {
-        // вимірюємо тривалість упорядкування масиву дати та часу
         long timeStart = System.nanoTime();
+functional-programming
+        // 2.4.1 Сортування масиву
+        this.floatArray = Arrays.stream(this.floatArray)
+                                  .sorted()
+                                  .toArray(Float[]::new);
+        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву float");
+
 
         dateTimeArray = Arrays.stream(dateTimeArray)
                               .sorted()
                               .toArray(LocalDateTime[]::new);
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву дати i часу");
+functional-programming
     }
 
     /**
-     * Здійснює пошук конкретного значення в масиві дати та часу.
+     * Здійснює пошук елемента в масиві float, використовуючи Stream API.
      */
     private void findInArray() {
-        // відстежуємо час виконання пошуку в масиві
         long timeStart = System.nanoTime();
+ functional-programming
+        // 2.4.2 Пошук конкретного значення в масиві
+        int position = IntStream.range(0, this.floatArray.length)
+                                .filter(i -> floatValueToSearch == this.floatArray[i])
+                                .findFirst()
+                                .orElse(-1);
+
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi float");
+
         
         int position = Arrays.stream(dateTimeArray)
                 .map(Arrays.asList(dateTimeArray)::indexOf)
@@ -88,25 +78,35 @@ public class BasicDataOperationUsingQueue {
                 .orElse(-1);
       
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi дати i часу");
+functional-programming
 
         if (position >= 0) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в масивi за позицією: " + position);
+            System.out.println("Елемент '" + floatValueToSearch + "' знайдено в масивi за позицією: " + position);
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в масиві.");
+            System.out.println("Елемент '" + floatValueToSearch + "' відсутній в масиві.");
         }
     }
 
     /**
-     * Визначає найменше та найбільше значення в масиві LocalDateTime.
+     * Визначає найменше і найбільше значення в масиві, використовуючи Stream API.
      */
     private void locateMinMaxInArray() {
-        if (dateTimeArray == null || dateTimeArray.length == 0) {
+        if (floatArray == null || floatArray.length == 0) {
             System.out.println("Масив є пустим або не ініціалізованим.");
             return;
         }
 
-        // відстежуємо час на визначення граничних значень
         long timeStart = System.nanoTime();
+
+ functional-programming
+        // 2.4.3 Пошук мінімального і максимального значення в масиві (заміна ручного циклу)
+        Float min = Arrays.stream(this.floatArray)
+                           .min(Float::compareTo)
+                           .orElse(null);
+
+        Float max = Arrays.stream(this.floatArray)
+                           .max(Float::compareTo)
+                           .orElse(null);
 
         // Використовуємо Stream API для пошуку мінімуму та максимуму
         LocalDateTime minValue = Arrays.stream(dateTimeArray)
@@ -116,43 +116,59 @@ public class BasicDataOperationUsingQueue {
         LocalDateTime maxValue = Arrays.stream(dateTimeArray)
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
+functional-programming
 
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в масивi");
+        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
-        System.out.println("Найменше значення в масивi: " + minValue);
-        System.out.println("Найбільше значення в масивi: " + maxValue);
+        System.out.println("Найменше значення в масивi: " + min);
+        System.out.println("Найбільше значення в масивi: " + max);
     }
 
     /**
-     * Здійснює пошук конкретного значення в черзі дати та часу.
+     * Пошук конкретного значення в черзі, використовуючи Stream API.
      */
     private void findInQueue() {
-        // вимірюємо час пошуку в черзі
         long timeStart = System.nanoTime();
+        
+        // 2.5.3 Пошук конкретного значення в черзі (заміна .contains)
+        boolean elementExists = this.floatQueue.stream()
+            .anyMatch(f -> f.equals(floatValueToSearch)); // Використання anyMatch
+
+functional-programming
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в PriorityQueue float");
 
         boolean elementExists = dateTimeQueue.stream()
             .anyMatch(dateTime -> dateTime.equals(dateTimeValueToSearch));
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в Queue дати i часу");
+functional-programming
 
         if (elementExists) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в Queue");
+            System.out.println("Елемент '" + floatValueToSearch + "' знайдено в PriorityQueue");
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в Queue.");
+            System.out.println("Елемент '" + floatValueToSearch + "' відсутній в PriorityQueue.");
         }
     }
 
     /**
-     * Визначає найменше та найбільше значення в черзі LocalDateTime.
+     * Пошук мінімального і максимального значення в черзі, використовуючи Stream API.
      */
     private void locateMinMaxInQueue() {
-        if (dateTimeQueue == null || dateTimeQueue.isEmpty()) {
+        if (floatQueue == null || floatQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
 
-        // відстежуємо час пошуку граничних значень
         long timeStart = System.nanoTime();
+
+ functional-programming
+        // 2.5.3 Пошук мінімального та максимального значення в черзі
+        Float minValue = floatQueue.stream()
+                .min(Float::compareTo)
+                .orElse(null);
+        
+        Float maxValue = floatQueue.stream()
+                .max(Float::compareTo)
 
         // Використовуємо Stream API для пошуку мінімуму та максимуму
         LocalDateTime minValue = dateTimeQueue.stream()
@@ -161,30 +177,32 @@ public class BasicDataOperationUsingQueue {
         
         LocalDateTime maxValue = dateTimeQueue.stream()
                 .max(LocalDateTime::compareTo)
+functional-programming
                 .orElse(null);
 
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в Queue");
+        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в PriorityQueue");
 
-        System.out.println("Найменше значення в Queue: " + minValue);
-        System.out.println("Найбільше значення в Queue: " + maxValue);
+        System.out.println("Найменше значення в PriorityQueue: " + minValue);
+        System.out.println("Найбільше значення в PriorityQueue: " + maxValue);
     }
 
     /**
-     * Виконує операції peek і poll з чергою LocalDateTime.
+     * Операції peek/poll залишаються імперативними, оскільки вони змінюють стан черги
+     * і не мають прямого функціонального аналога, що повертає чергу.
      */
     private void performQueueOperations() {
-        if (dateTimeQueue == null || dateTimeQueue.isEmpty()) {
+        if (floatQueue == null || floatQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
 
-        LocalDateTime headElement = dateTimeQueue.peek();
+        Float headElement = floatQueue.peek();
         System.out.println("Головний елемент черги (peek): " + headElement);
 
-        headElement = dateTimeQueue.poll();
+        headElement = floatQueue.poll();
         System.out.println("Видалений елемент черги (poll): " + headElement);
 
-        headElement = dateTimeQueue.peek();
+        headElement = floatQueue.peek();
         System.out.println("Новий головний елемент черги: " + headElement);
     }
 }
