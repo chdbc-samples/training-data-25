@@ -1,4 +1,3 @@
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,26 +12,30 @@ import java.util.List;
  *   <li>{@link #performArraySorting()} - Упорядковує масив елементів LocalDateTime.</li>
  *   <li>{@link #findInArray()} - Здійснює пошук елемента в масиві LocalDateTime.</li>
  *   <li>{@link #locateMinMaxInArray()} - Визначає найменше і найбільше значення в масиві.</li>
- *   <li>{@link #sortList()} - Сортує колекцію List з LocalDateTime.</li>
+ *   <li>{@link #sortList()} - Сортує колекцію List з float.</li>
  *   <li>{@link #findInList()} - Пошук конкретного значення в списку.</li>
  *   <li>{@link #locateMinMaxInList()} - Пошук мінімального і максимального значення в списку.</li>
  * </ul>
  */
 public class BasicDataOperationUsingList {
-    private LocalDateTime dateTimeValueToSearch;
-    private LocalDateTime[] dateTimeArray;
-    private List<LocalDateTime> dateTimeList;
+    private Float floatValueToSearch;
+    private Float[] floatArray;
+    private List<Float> floatList;
 
     /**
      * Конструктор, який iнiцiалiзує об'єкт з готовими даними.
      * 
-     * @param dateTimeValueToSearch Значення для пошуку
-     * @param dateTimeArray Масив LocalDateTime
+     * @param floatValueToSearch Значення для пошуку
+     * @param floatArray Масив float
      */
-    BasicDataOperationUsingList(LocalDateTime dateTimeValueToSearch, LocalDateTime[] dateTimeArray) {
-        this.dateTimeValueToSearch = dateTimeValueToSearch;
-        this.dateTimeArray = dateTimeArray;
-        this.dateTimeList = new ArrayList<>(Arrays.asList(dateTimeArray));
+    BasicDataOperationUsingList(float floatValueToSearch, float[] floatArray) {
+        this.floatValueToSearch = floatValueToSearch;
+        Float[] boxedArray = new Float[floatArray.length];
+        for (int i = 0; i < floatArray.length; i++) {
+            boxedArray[i] = floatArray[i];
+        }
+        this.floatArray = boxedArray;
+        this.floatList = new ArrayList<Float>(Arrays.asList(boxedArray));
     }
     
     /**
@@ -61,7 +64,7 @@ public class BasicDataOperationUsingList {
         locateMinMaxInArray();
 
         // зберігаємо відсортований масив до окремого файлу
-        DataFileHandler.writeArrayToFile(dateTimeArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
+        DataFileHandler.writeArrayToFile(floatArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
     }
 
     /**
@@ -71,7 +74,7 @@ public class BasicDataOperationUsingList {
     void performArraySorting() {
         long timeStart = System.nanoTime();
 
-        Arrays.sort(dateTimeArray);
+        Arrays.sort(floatArray);
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву дати i часу");
     }
@@ -82,14 +85,14 @@ public class BasicDataOperationUsingList {
     void findInArray() {
         long timeStart = System.nanoTime();
 
-        int position = Arrays.binarySearch(this.dateTimeArray, dateTimeValueToSearch);
+        int position = Arrays.binarySearch(this.floatArray, floatValueToSearch);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi дати i часу");
 
         if (position >= 0) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в масивi за позицією: " + position);
+            System.out.println("Елемент '" + floatValueToSearch + "' знайдено в масивi за позицією: " + position);
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в масиві.");
+            System.out.println("Елемент '" + floatValueToSearch + "' відсутній в масиві.");
         }
     }
 
@@ -97,21 +100,21 @@ public class BasicDataOperationUsingList {
      * Визначає найменше та найбільше значення в масиві дати та часу.
      */
     void locateMinMaxInArray() {
-        if (dateTimeArray == null || dateTimeArray.length == 0) {
+        if (floatArray == null || floatArray.length == 0) {
             System.out.println("Масив є пустим або не ініціалізованим.");
             return;
         }
 
         long timeStart = System.nanoTime();
 
-        LocalDateTime minValue = dateTimeArray[0];
-        LocalDateTime maxValue = dateTimeArray[0];
+        Float minValue = floatArray[0];
+        Float maxValue = floatArray[0];
 
-        for (LocalDateTime currentDateTime : dateTimeArray) {
-            if (currentDateTime.isBefore(minValue)) {
+        for (Float currentDateTime : floatArray) {
+            if (floatValueToSearch < minValue) {
                 minValue = currentDateTime;
             }
-            if (currentDateTime.isAfter(maxValue)) {
+            if (floatValueToSearch > maxValue) {
                 maxValue = currentDateTime;
             }
         }
@@ -128,30 +131,30 @@ public class BasicDataOperationUsingList {
     void findInList() {
         long timeStart = System.nanoTime();
 
-        int position = Collections.binarySearch(this.dateTimeList, dateTimeValueToSearch);
+        int position = Collections.binarySearch(this.floatList, floatValueToSearch);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в List дати i часу");        
 
         if (position >= 0) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в ArrayList за позицією: " + position);
+            System.out.println("Елемент '" + floatValueToSearch + "' знайдено в Vector за позицією: " + position);
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в ArrayList.");
+            System.out.println("Елемент '" + floatValueToSearch + "' відсутній в Vector.");
         }
     }
 
     /**
-     * Визначає найменше і найбільше значення в колекції ArrayList з датами.
+     * Визначає найменше і найбільше значення в колекції Vector з датами.
      */
     void locateMinMaxInList() {
-        if (dateTimeList == null || dateTimeList.isEmpty()) {
-            System.out.println("Колекція ArrayList є пустою або не ініціалізованою.");
+        if (floatList == null || floatList.isEmpty()) {
+            System.out.println("Колекція Vector є пустою або не ініціалізованою.");
             return;
         }
 
         long timeStart = System.nanoTime();
 
-        LocalDateTime minValue = Collections.min(dateTimeList);
-        LocalDateTime maxValue = Collections.max(dateTimeList);
+        Float minValue = Collections.min(floatList);
+        Float maxValue = Collections.max(floatList);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в List");
 
@@ -166,8 +169,8 @@ public class BasicDataOperationUsingList {
     void sortList() {
         long timeStart = System.nanoTime();
 
-        Collections.sort(dateTimeList);
+        Collections.sort(floatList);
 
-        PerformanceTracker.displayOperationTime(timeStart, "упорядкування ArrayList дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "упорядкування Vector дати i часу");
     }
 }
