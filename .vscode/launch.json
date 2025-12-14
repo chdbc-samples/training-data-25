@@ -1,15 +1,26 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        {
+            "type": "java",
+            "name": "BasicDataOperationUsingMap",
+            "request": "launch",
+            "mainClass": "BasicDataOperationUsingMap",
+            "projectName": "PROGA2_a1a1494d"
+        },
+        {
+            "type": "java",
+            "name": "BasicDataOperation",
+            "request": "launch",
+            "mainClass": "BasicDataOperation",
+            "projectName": "PROGA2_a1a1494d"
+        },
         {
             "type": "java",
             "name": "BasicDataOperation",
             "request": "launch",
             "mainClass": "${file}",
-            "args": "2024-03-07T10:55:43"
+            "args": "891655.4"
         }
     ]
 }

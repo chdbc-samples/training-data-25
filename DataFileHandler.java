@@ -3,58 +3,50 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-/**
- * Клас DataFileHandler управляє роботою з файлами даних LocalDateTime.
- */
 public class DataFileHandler {
+
     /**
-     * Завантажує масив об'єктів LocalDateTime з файлу.
-     * 
+     * Завантажує масив об'єктів Float з файлу, використовуючи Stream API.
+     *
      * @param filePath Шлях до файлу з даними.
-     * @return Масив об'єктів LocalDateTime.
+     * @return Масив об'єктів Float.
      */
-    public static LocalDateTime[] loadArrayFromFile(String filePath) {
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_DATE_TIME;
-        LocalDateTime[] temporaryArray = new LocalDateTime[1000];
-        int currentIndex = 0;
-
+    public static Float[] loadArrayFromFile(String filePath) {
         try (BufferedReader fileReader = new BufferedReader(new FileReader(filePath))) {
-            String currentLine;
-            while ((currentLine = fileReader.readLine()) != null) {
-                // Видаляємо можливі невидимі символи та BOM
-                currentLine = currentLine.trim().replaceAll("^\\uFEFF", "");
-                if (!currentLine.isEmpty()) {
-                    LocalDateTime parsedDateTime = LocalDateTime.parse(currentLine, timeFormatter);
-                    temporaryArray[currentIndex++] = parsedDateTime;
-                }
-            }
+            return fileReader.lines() // Отримуємо потік рядків з файлу
+                    .map(currentLine -> currentLine.trim().replaceAll("^\\uFEFF", "")) // Очищаємо пробіли та BOM
+                    .filter(currentLine -> !currentLine.isEmpty()) // Видаляємо порожні рядки
+                    .map(currentLine -> Float.parseFloat(currentLine)) // Конвертуємо кожен рядок у Float
+                    .toArray(Float[]::new); // Збираємо результат у масив Float[]
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            // Замінюємо перехоплення на RuntimeException, як у прикладі вказівки
+            throw new RuntimeException("Помилка читання даних з файлу: " + filePath, ioException);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Помилка конвертації даних у Float: " + filePath, e);
         }
-
-        LocalDateTime[] resultArray = new LocalDateTime[currentIndex];
-        System.arraycopy(temporaryArray, 0, resultArray, 0, currentIndex);
-
-        return resultArray;
     }
 
     /**
-     * Зберігає масив об'єктів LocalDateTime у файл.
-     * 
-     * @param dateTimeArray Масив об'єктів LocalDateTime.
-     * @param filePath Шлях до файлу для збереження.
+     * Зберігає масив об'єктів Float у файл, використовуючи Stream API.
+     *
+     * @param floatArray Масив об'єктів Float.
+     * @param filePath   Шлях до файлу для збереження.
      */
-    public static void writeArrayToFile(LocalDateTime[] dateTimeArray, String filePath) {
+    public static void writeArrayToFile(Float[] floatArray, String filePath) {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath))) {
-            for (LocalDateTime dateTimeElement : dateTimeArray) {
-                fileWriter.write(dateTimeElement.toString());
-                fileWriter.newLine();
-            }
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+            // Конвертуємо масив у потік
+            String content = Arrays.stream(floatArray)
+                    // Конвертуємо кожен елемент Float у String, використовуючи String::valueOf
+                    .map(String::valueOf)
+                    // Об'єднуємо всі рядки, розділяючи системним роздільником
+                    .collect(Collectors.joining(System.lineSeparator()));
+
+            fileWriter.write(content);
+        } catch (IOException e) {
+            throw new RuntimeException("Помилка запису даних у файл: " + filePath, e);
         }
     }
 }
