@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Comparator;
@@ -47,10 +46,16 @@ public class BasicDataOperationUsingSet {
     private void performArraySorting() {
         long timeStart = System.nanoTime();
 
+ record
         // 2.4.1 Сортування масиву
         this.floatArray = Arrays.stream(this.floatArray)
                                   .sorted()
                                   .toArray(Float[]::new);
+
+        dateTimeArray = Arrays.stream(dateTimeArray)
+                              .sorted()
+                              .toArray(LocalDateTime[]::new);
+ record
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву float");
     }
@@ -61,11 +66,19 @@ public class BasicDataOperationUsingSet {
     private void findInArray() {
         long timeStart = System.nanoTime();
 
+ record
         // Функціональний пошук позиції елемента (заміна Arrays.binarySearch)
         int position = IntStream.range(0, this.floatArray.length)
                                 .filter(i -> floatValueToSearch == this.floatArray[i])
                                 .findFirst()
                                 .orElse(-1);
+
+        int position = Arrays.stream(dateTimeArray)
+                .map(Arrays.asList(dateTimeArray)::indexOf)
+                .filter(i -> dateTimeValueToSearch.equals(dateTimeArray[i]))
+                .findFirst()
+                .orElse(-1);
+ record
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi float");
 
@@ -87,6 +100,7 @@ public class BasicDataOperationUsingSet {
 
         long timeStart = System.nanoTime();
 
+ record
         // 2.4.3 Пошук мінімального і максимального значення в масиві (заміна ручного циклу)
         Float min = Arrays.stream(this.floatArray)
                            .min(Float::compareTo)
@@ -95,6 +109,16 @@ public class BasicDataOperationUsingSet {
         Float max = Arrays.stream(this.floatArray)
                            .max(Float::compareTo)
                            .orElse(null);
+
+        // Використовуємо Stream API для пошуку мінімуму та максимуму
+        LocalDateTime minValue = Arrays.stream(dateTimeArray)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        
+        LocalDateTime maxValue = Arrays.stream(dateTimeArray)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+ record
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
@@ -108,9 +132,14 @@ public class BasicDataOperationUsingSet {
     private void findInSet() {
         long timeStart = System.nanoTime();
 
+ record
         // 2.5.2 Пошук конкретного значення (заміна .contains)
         boolean elementExists = this.floatSet.stream()
             .anyMatch(f -> f.equals(floatValueToSearch));
+
+        boolean elementExists = dateTimeSet.stream()
+            .anyMatch(dateTime -> dateTime.equals(dateTimeValueToSearch));
+ record
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в HashSet float");
 
@@ -132,6 +161,7 @@ public class BasicDataOperationUsingSet {
 
         long timeStart = System.nanoTime();
 
+ record
         // 2.5.2 Пошук мінімального та максимального значення (заміна Collections.min/max)
         Float minValue = floatSet.stream()
                 .min(Float::compareTo)
@@ -139,6 +169,15 @@ public class BasicDataOperationUsingSet {
 
         Float maxValue = floatSet.stream()
                 .max(Float::compareTo)
+
+        // Використовуємо Stream API для пошуку мінімуму та максимуму
+        LocalDateTime minValue = dateTimeSet.stream()
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        
+        LocalDateTime maxValue = dateTimeSet.stream()
+                .max(LocalDateTime::compareTo)
+ record
                 .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в HashSet");
@@ -151,12 +190,21 @@ public class BasicDataOperationUsingSet {
      * Порівняння масиву та множини, використовуючи Stream API.
      */
     private void analyzeArrayAndSet() {
+ record
         System.out.println("Кiлькiсть елементiв в масивi: " + floatArray.length);
         System.out.println("Кiлькiсть елементiв в HashSet: " + floatSet.size());
 
         // 2.5.2 Порівняння масиву та множини (заміна циклу for)
         boolean allElementsPresent = Arrays.stream(floatArray)
                 .allMatch(floatSet::contains);
+
+        System.out.println("Кiлькiсть елементiв в масивi: " + dateTimeArray.length);
+        System.out.println("Кiлькiсть елементiв в HashSet: " + dateTimeSet.size());
+
+        // Використовуємо Stream API для перевірки наявності всіх елементів
+        boolean allElementsPresent = Arrays.stream(dateTimeArray)
+                .allMatch(dateTimeSet::contains);
+ record
 
         if (allElementsPresent) {
             System.out.println("Всi елементи масиву наявні в HashSet.");

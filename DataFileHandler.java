@@ -3,6 +3,11 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+ record
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+ record
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -14,6 +19,7 @@ public class DataFileHandler {
      * @param filePath Шлях до файлу з даними.
      * @return Масив об'єктів Float.
      */
+ record
     public static Float[] loadArrayFromFile(String filePath) {
         try (BufferedReader fileReader = new BufferedReader(new FileReader(filePath))) {
             return fileReader.lines() // Отримуємо потік рядків з файлу
@@ -26,6 +32,19 @@ public class DataFileHandler {
             throw new RuntimeException("Помилка читання даних з файлу: " + filePath, ioException);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Помилка конвертації даних у Float: " + filePath, e);
+
+    public static LocalDateTime[] loadArrayFromFile(String filePath) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(filePath))) {
+            return fileReader.lines()
+                    .map(currentLine -> currentLine.trim().replaceAll("^\\uFEFF", ""))
+                    .filter(currentLine -> !currentLine.isEmpty())
+                    .map(currentLine -> LocalDateTime.parse(currentLine, timeFormatter))
+                    .toArray(LocalDateTime[]::new);
+        } catch (IOException ioException) {
+            throw new RuntimeException("Помилка читання даних з файлу: " + filePath, ioException);
+ record
         }
     }
 
@@ -37,6 +56,7 @@ public class DataFileHandler {
      */
     public static void writeArrayToFile(Float[] floatArray, String filePath) {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath))) {
+ record
             // Конвертуємо масив у потік
             String content = Arrays.stream(floatArray)
                     // Конвертуємо кожен елемент Float у String, використовуючи String::valueOf
@@ -47,6 +67,15 @@ public class DataFileHandler {
             fileWriter.write(content);
         } catch (IOException e) {
             throw new RuntimeException("Помилка запису даних у файл: " + filePath, e);
+
+            String content = Arrays.stream(dateTimeArray)
+                    .map(LocalDateTime::toString)
+                    .collect(Collectors.joining(System.lineSeparator()));
+            
+            fileWriter.write(content);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+ record
         }
     }
 }

@@ -40,11 +40,20 @@ public class BasicDataOperationUsingQueue {
      */
     private void performArraySorting() {
         long timeStart = System.nanoTime();
+ record
         // 2.4.1 Сортування масиву
         this.floatArray = Arrays.stream(this.floatArray)
                                   .sorted()
                                   .toArray(Float[]::new);
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву float");
+
+
+        dateTimeArray = Arrays.stream(dateTimeArray)
+                              .sorted()
+                              .toArray(LocalDateTime[]::new);
+
+        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву дати i часу");
+ record
     }
 
     /**
@@ -52,6 +61,7 @@ public class BasicDataOperationUsingQueue {
      */
     private void findInArray() {
         long timeStart = System.nanoTime();
+ record
         // 2.4.2 Пошук конкретного значення в масиві
         int position = IntStream.range(0, this.floatArray.length)
                                 .filter(i -> floatValueToSearch == this.floatArray[i])
@@ -59,6 +69,16 @@ public class BasicDataOperationUsingQueue {
                                 .orElse(-1);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi float");
+
+        
+        int position = Arrays.stream(dateTimeArray)
+                .map(Arrays.asList(dateTimeArray)::indexOf)
+                .filter(i -> dateTimeValueToSearch.equals(dateTimeArray[i]))
+                .findFirst()
+                .orElse(-1);
+      
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi дати i часу");
+ record
 
         if (position >= 0) {
             System.out.println("Елемент '" + floatValueToSearch + "' знайдено в масивi за позицією: " + position);
@@ -78,6 +98,7 @@ public class BasicDataOperationUsingQueue {
 
         long timeStart = System.nanoTime();
 
+ record
         // 2.4.3 Пошук мінімального і максимального значення в масиві (заміна ручного циклу)
         Float min = Arrays.stream(this.floatArray)
                            .min(Float::compareTo)
@@ -86,6 +107,16 @@ public class BasicDataOperationUsingQueue {
         Float max = Arrays.stream(this.floatArray)
                            .max(Float::compareTo)
                            .orElse(null);
+
+        // Використовуємо Stream API для пошуку мінімуму та максимуму
+        LocalDateTime minValue = Arrays.stream(dateTimeArray)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        
+        LocalDateTime maxValue = Arrays.stream(dateTimeArray)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+ record
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
@@ -103,7 +134,14 @@ public class BasicDataOperationUsingQueue {
         boolean elementExists = this.floatQueue.stream()
             .anyMatch(f -> f.equals(floatValueToSearch)); // Використання anyMatch
 
+ record
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в PriorityQueue float");
+
+        boolean elementExists = dateTimeQueue.stream()
+            .anyMatch(dateTime -> dateTime.equals(dateTimeValueToSearch));
+
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в Queue дати i часу");
+ record
 
         if (elementExists) {
             System.out.println("Елемент '" + floatValueToSearch + "' знайдено в PriorityQueue");
@@ -123,6 +161,7 @@ public class BasicDataOperationUsingQueue {
 
         long timeStart = System.nanoTime();
 
+ record
         // 2.5.3 Пошук мінімального та максимального значення в черзі
         Float minValue = floatQueue.stream()
                 .min(Float::compareTo)
@@ -130,6 +169,15 @@ public class BasicDataOperationUsingQueue {
         
         Float maxValue = floatQueue.stream()
                 .max(Float::compareTo)
+
+        // Використовуємо Stream API для пошуку мінімуму та максимуму
+        LocalDateTime minValue = dateTimeQueue.stream()
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        
+        LocalDateTime maxValue = dateTimeQueue.stream()
+                .max(LocalDateTime::compareTo)
+ record
                 .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в PriorityQueue");
