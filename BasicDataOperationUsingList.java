@@ -65,10 +65,16 @@ public class BasicDataOperationUsingList {
     void performArraySorting() {
         long timeStart = System.nanoTime();
 
+functional-programming
         // 2.4.1 Сортування масиву
         this.floatArray = Arrays.stream(this.floatArray)
                                   .sorted()
                                   .toArray(Float[]::new);
+
+        dateTimeArray = Arrays.stream(dateTimeArray)
+                      .sorted()
+                      .toArray(LocalDateTime[]::new);
+ functional-programming
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву float");
     }
@@ -79,12 +85,20 @@ public class BasicDataOperationUsingList {
     void findInArray() {
         long timeStart = System.nanoTime();
 
+functional-programming
         // 2.4.2 Пошук конкретного значення в масиві
         // Використовуємо IntStream для ітерації по індексах і пошуку позиції елемента.
         int position = IntStream.range(0, this.floatArray.length)
                                 .filter(i -> floatValueToSearch == this.floatArray[i])
                                 .findFirst()
                                 .orElse(-1);
+
+        int position = Arrays.stream(dateTimeArray)
+                .map(Arrays.asList(dateTimeArray)::indexOf)
+                .filter(i -> dateTimeValueToSearch.equals(dateTimeArray[i]))
+                .findFirst()
+                .orElse(-1);
+functional-programming
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi float");
 
@@ -106,6 +120,7 @@ public class BasicDataOperationUsingList {
 
         long timeStart = System.nanoTime();
 
+functional-programming
         // 2.4.3 Пошук мінімального значення
         Float min = Arrays.stream(this.floatArray)
                            .min(Float::compareTo)
@@ -115,6 +130,16 @@ public class BasicDataOperationUsingList {
         Float max = Arrays.stream(this.floatArray)
                            .max(Float::compareTo)
                            .orElse(null);
+
+        // Використовуємо Stream API для пошуку мінімуму та максимуму
+        LocalDateTime minValue = Arrays.stream(dateTimeArray)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        
+        LocalDateTime maxValue = Arrays.stream(dateTimeArray)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+functional-programming
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
@@ -128,12 +153,20 @@ public class BasicDataOperationUsingList {
     void findInList() {
         long timeStart = System.nanoTime();
 
+functional-programming
         // 2.5.1 Пошук значення в списку
         // Використовуємо Stream для пошуку позиції елемента.
         int position = IntStream.range(0, this.floatList.size())
                                 .filter(i -> floatValueToSearch == this.floatList.get(i))
                                 .findFirst()
                                 .orElse(-1);
+
+        int position = dateTimeList.stream()
+            .map(dateTimeList::indexOf)
+            .filter(i -> dateTimeValueToSearch.equals(dateTimeList.get(i)))
+            .findFirst()
+            .orElse(-1);
+functional-programming
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в List float");
 
@@ -155,6 +188,7 @@ public class BasicDataOperationUsingList {
 
         long timeStart = System.nanoTime();
 
+ functional-programming
         // Пошук мінімального значення
         Float min = this.floatList.stream()
                                   .min(Float::compareTo)
@@ -164,6 +198,16 @@ public class BasicDataOperationUsingList {
         Float max = this.floatList.stream()
                                   .max(Float::compareTo)
                                   .orElse(null);
+
+        // Використовуємо Stream API для пошуку мінімуму та максимуму
+        LocalDateTime minValue = dateTimeList.stream()
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        
+        LocalDateTime maxValue = dateTimeList.stream()
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+functional-programming
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в List");
 
@@ -177,11 +221,19 @@ public class BasicDataOperationUsingList {
     void sortList() {
         long timeStart = System.nanoTime();
 
+ functional-programming
         // 2.5.1 Сортування List (для LinkedList, ArrayList)
         this.floatList = this.floatList.stream()
                                        .sorted()
                                        .collect(Collectors.toCollection(LinkedList::new));
                                        
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування LinkedList float");
+
+        dateTimeList = dateTimeList.stream()
+                       .sorted()
+                       .toList();
+
+        PerformanceTracker.displayOperationTime(timeStart, "упорядкування ArrayList дати i часу");
+functional-programming
     }
 }
